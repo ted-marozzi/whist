@@ -12,26 +12,6 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Whist extends CardGame {
 
 
-    /**********************************************************************************************
-     * Card Meta
-     */
-
-
-    public enum Suit {
-        SPADES, HEARTS, DIAMONDS, CLUBS
-    }
-
-    public enum Rank {
-        // Reverse order of rank importance (see rankGreater() below)
-        // Order of cards is tied to card images
-        ACE, KING, QUEEN, JACK, TEN, NINE, EIGHT, SEVEN, SIX, FIVE, FOUR, THREE, TWO
-    }
-
-    public boolean rankGreater(Card card1, Card card2) {
-        return card1.getRankId() < card2.getRankId(); // Warning: Reverse rank order of cards (see comment on enum)
-    }
-
-    final String[] trumpImage = {"bigspade.gif", "bigheart.gif", "bigdiamond.gif", "bigclub.gif"};
 
 
     /**********************************************************************************************
@@ -63,11 +43,11 @@ public class Whist extends CardGame {
     private final String version = "1.0";
     public final int nbStartCards = 13;
     public final int winningScore = 24;
-    private static final int handWidth = 400;
+    private final int handWidth = 400;
     private final int trickWidth = 40;
     private boolean enforceRules = false;
     private final int thinkingTime = 2000;
-    private final Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
+    private final Deck deck = new Deck(WhistCard.Suit.values(), WhistCard.Rank.values(), "cover");
 
     /**********************************************************************************************
      * Locations and Graphics
@@ -91,14 +71,14 @@ public class Whist extends CardGame {
     private Actor[] scoreActors = {null, null, null, null};
     private final Location trickLocation = new Location(350, 350);
     private final Location textLocation = new Location(350, 450);
-    private Location hideLocation = new Location(-500, -500);
+    private final Location hideLocation = new Location(-500, -500);
     private Location trumpsActorLocation = new Location(50, 50);
     Font bigFont = new Font("Serif", Font.BOLD, 36);
 
     /**********************************************************************************************
      * Players
      */
-    private List<Player> players = new ArrayList<>();
+    private final List<Player> players = new ArrayList<>();
     public final int nbPlayers = 4;
     private Hand[] hands;
     private Card selected;
@@ -143,8 +123,8 @@ public class Whist extends CardGame {
 
 
     private void initRound() {
-        hands = deck.dealingOut(nbPlayers, nbStartCards); // Last element of hands is leftover cards; these are ignored
-        for (int i = 0; i < nbPlayers; i++) {
+        hands = deck.dealingOut(players.size(), nbStartCards); // Last element of hands is leftover cards; these are ignored
+        for (int i = 0; i < players.size(); i++) {
             hands[i].sort(Hand.SortType.SUITPRIORITY, true);
             players.get(i).setHand(hands[i]);
         }
@@ -158,8 +138,8 @@ public class Whist extends CardGame {
         };
         players.get(0).getHand().addCardListener(cardListener);
         // graphics
-        RowLayout[] layouts = new RowLayout[nbPlayers];
-        for (int i = 0; i < nbPlayers; i++) {
+        RowLayout[] layouts = new RowLayout[players.size()];
+        for (int i = 0; i < players.size(); i++) {
             layouts[i] = new RowLayout(handLocations[i], handWidth);
             layouts[i].setRotationAngle(90 * i);
             // layouts[i].setStepDelay(10);
@@ -172,15 +152,15 @@ public class Whist extends CardGame {
 
     private Optional<Integer> playRound() {  // Returns winner, if any
         // Select and display trump suit
-        final Suit trumps = randomEnum(Suit.class);
-        final Actor trumpsActor = new Actor("sprites/" + trumpImage[trumps.ordinal()]);
+        final WhistCard.Suit trumps = randomEnum(WhistCard.Suit.class);
+        final Actor trumpsActor = new Actor("sprites/" + WhistCard.trumpImage[trumps.ordinal()]);
         addActor(trumpsActor, trumpsActorLocation);
         // End trump suit
         Hand trick;
         Player winner;
         Card winningCard;
-        Suit lead;
-        Player nextPlayer = players.get(random.nextInt(nbPlayers)); // randomly select player to lead for this round
+        WhistCard.Suit lead;
+        Player nextPlayer = players.get(random.nextInt(players.size())); // randomly select player to lead for this round
         for (int i = 0; i < nbStartCards; i++) {
             trick = new Hand(deck);
             selected = null;
@@ -191,6 +171,7 @@ public class Whist extends CardGame {
             } else {
                 setStatusText("Player " + nextPlayer.getPlayerNum() + " thinking...");
                 delay(thinkingTime);
+                // Player selection algorithm
                 selected = randomCard(players.get(nextPlayer.getPlayerNum()).getHand());
             }
             // Lead with selected card
@@ -198,7 +179,7 @@ public class Whist extends CardGame {
             trick.draw();
             selected.setVerso(false);
             // No restrictions on the card being lead
-            lead = (Suit) selected.getSuit();
+            lead = (WhistCard.Suit) selected.getSuit();
             selected.transfer(trick, true); // transfer to trick (includes graphic effect)
             winner = nextPlayer;
             winningCard = selected;
@@ -246,7 +227,7 @@ public class Whist extends CardGame {
                 System.out.println("Winning card: " + winningCard.toString());
                 System.out.println("Player " + nextPlayer.getPlayerNum() + " play: " + selected.toString() + " from [" + printHand(nextPlayer.getHand().getCardList()) + "]");
                 if ( // beat current winner with higher card
-                        (selected.getSuit() == winningCard.getSuit() && rankGreater(selected, winningCard)) ||
+                        (selected.getSuit() == winningCard.getSuit() && WhistCard.rankGreater(selected, winningCard)) ||
                                 // trumped when non-trump was winning
                                 (selected.getSuit() == trumps && winningCard.getSuit() != trumps)) {
                     winner = nextPlayer;
