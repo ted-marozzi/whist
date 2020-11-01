@@ -22,17 +22,8 @@ public class Whist extends CardGame {
         return clazz.getEnumConstants()[x];
     }
 
-    // return random Card from Hand
-    public static Card randomCard(Hand hand) {
-        int x = random.nextInt(hand.getNumberOfCards());
-        return hand.get(x);
-    }
 
-    // return random Card from ArrayList
-    public static Card randomCard(ArrayList<Card> list) {
-        int x = random.nextInt(list.size());
-        return list.get(x);
-    }
+
 
     /**********************************************************************************************
      * Variables
@@ -166,18 +157,19 @@ public class Whist extends CardGame {
 
         if (nextPlayer instanceof Human) {  // Select lead depending on player type
             nextPlayer.getHand().setTouchEnabled(true);
-            setStatus("Player " + Integer.toString(nextPlayer.getPlayerNum()) + " double-click on card to " + leadOrFollow);
+            setStatus("Player " + nextPlayer.getPlayerNum() + " double-click on card to " + leadOrFollow);
             while (null == selected) delay(100);
         } else if(nextPlayer instanceof AI){
             setStatusText("Player " + nextPlayer.getPlayerNum() + " thinking...");
             delay(thinkingTime);
             // Player selection algorithm
-            selected = randomCard(nextPlayer.getHand());
+            selected = ((AI) nextPlayer).select( new RandomSelect(), nextPlayer.getHand());
         }
 
 
 
     }
+
 
     private void checkSuit(Player nextPlayer)    {
 
@@ -298,9 +290,11 @@ public class Whist extends CardGame {
             nextPlayer = winner;
             System.out.println("Winner: " + winner.getPlayerNum());
             setStatusText("Player " + nextPlayer + " wins trick.");
+
             nextPlayer.setScore(nextPlayer.getScore() + 1);
             updateScore(nextPlayer);
-            if (winningScore == nextPlayer.getScore()) return Optional.of(nextPlayer.getPlayerNum());
+
+            if (nextPlayer.getScore()==winningScore) return Optional.of(nextPlayer.getPlayerNum());
         }
         removeActor(trumpsActor);
         return Optional.empty();

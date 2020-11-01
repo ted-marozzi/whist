@@ -4,7 +4,7 @@ import ch.aplu.jcardgame.Hand;
 
 public abstract class Player {
 
-    private Hand hand;
+    protected Hand hand;
     private int score, playerNum;
 
 
@@ -34,4 +34,6 @@ public abstract class Player {
     public int getPlayerNum() {
         return playerNum;
     }
+
+
 }
