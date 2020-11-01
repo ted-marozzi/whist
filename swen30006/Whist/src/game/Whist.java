@@ -11,9 +11,6 @@ import java.util.concurrent.ThreadLocalRandom;
 @SuppressWarnings("serial")
 public class Whist extends CardGame {
 
-
-
-
     /**********************************************************************************************
      * Random
      */
@@ -48,6 +45,9 @@ public class Whist extends CardGame {
     private boolean enforceRules = false;
     private final int thinkingTime = 2000;
     private final Deck deck = new Deck(WhistCard.Suit.values(), WhistCard.Rank.values(), "cover");
+    private Player winner = null;
+    private Card winningCard = null;
+    private WhistCard.Suit lead = null;
 
     /**********************************************************************************************
      * Locations and Graphics
@@ -82,6 +82,7 @@ public class Whist extends CardGame {
     public final int nbPlayers = 4;
     private Hand[] hands;
     private Card selected;
+
 
     private void initPlayers()  {
         players.add(new Human(0));
@@ -123,6 +124,7 @@ public class Whist extends CardGame {
 
 
     private void initRound() {
+
         hands = deck.dealingOut(players.size(), nbStartCards); // Last element of hands is leftover cards; these are ignored
         for (int i = 0; i < players.size(); i++) {
             hands[i].sort(Hand.SortType.SUITPRIORITY, true);
@@ -149,95 +151,150 @@ public class Whist extends CardGame {
         }
     }
 
+    private void selectCard(Player nextPlayer, Boolean isLead)  {
 
-    private Optional<Integer> playRound() {  // Returns winner, if any
+
+
+        String leadOrFollow;
+
+        if(isLead)  {
+            leadOrFollow = "lead.";
+        } else  {
+            leadOrFollow = "follow.";
+        }
+
+
+        if (nextPlayer instanceof Human) {  // Select lead depending on player type
+            nextPlayer.getHand().setTouchEnabled(true);
+            setStatus("Player " + Integer.toString(nextPlayer.getPlayerNum()) + " double-click on card to " + leadOrFollow);
+            while (null == selected) delay(100);
+        } else if(nextPlayer instanceof AI){
+            setStatusText("Player " + nextPlayer.getPlayerNum() + " thinking...");
+            delay(thinkingTime);
+            // Player selection algorithm
+            selected = randomCard(nextPlayer.getHand());
+        }
+
+
+
+    }
+
+    private void checkSuit(Player nextPlayer)    {
+
+        if (selected.getSuit() != lead && nextPlayer.getHand().getNumberOfCardsWithSuit(lead) > 0) {
+            // Rule violation
+            String violation = "Follow rule broken by player " + nextPlayer.getPlayerNum() + " attempting to play " + selected;
+            //System.out.println(violation);
+            if (enforceRules)
+                try {
+                    throw (new BrokeRuleException(violation));
+                } catch (BrokeRuleException e) {
+                    e.printStackTrace();
+                    System.out.println("A cheating player spoiled the game!");
+                    System.exit(0);
+                }
+        }
+
+    }
+
+    private void drawTrick(Hand trick) {
+
+        // Lead with selected card
+        trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards() + 2) * trickWidth));
+        trick.draw();
+        selected.setVerso(false);
+
+    }
+
+    private Player getNextPlayer(Player lastPlayer)    {
+
+        if (lastPlayer.getPlayerNum() + 1 >= nbPlayers) {
+            return players.get(0);  // From last back to first
+        } else {
+            return players.get(lastPlayer.getPlayerNum() + 1);
+        }
+    }
+
+    private Boolean currentWinner(Card winningCard, WhistCard.Suit trumps) {
+        return (selected.getSuit() == winningCard.getSuit() && WhistCard.rankGreater(selected, winningCard)) ||
+                // trumped when non-trump was winning
+                (selected.getSuit() == trumps && winningCard.getSuit() != trumps);
+    }
+
+
+    private void lead(Player nextPlayer, Hand trick, WhistCard.Suit trumps) {
+        selected = null;
+        selectCard(nextPlayer, true);
+        drawTrick(trick);
+
+        // No restrictions on the card being lead
+        lead = (WhistCard.Suit) selected.getSuit();
+        selected.transfer(trick, true); // transfer to trick (includes graphic effect)
+
+        winner = nextPlayer;
+        winningCard = selected;
+
+        System.out.println("New trick: Lead Player = " + nextPlayer.getPlayerNum() + ", Lead suit = " + selected.getSuit() + ", Trump suit = " + trumps);
+        System.out.println("Player " + nextPlayer.getPlayerNum() + " play: " + selected.toString() + " from [" + printHand(players.get(nextPlayer.getPlayerNum()).getHand().getCardList()) + "]");
+        // End Lead
+    }
+
+    private void follow(Player nextPlayer, Hand trick, WhistCard.Suit trumps)   {
+
+        selected = null;
+        selectCard(nextPlayer, false);
+        // Follow with selected card
+        drawTrick(trick);
+
+        // Check: Following card must follow suit if possible
+        checkSuit(nextPlayer);
+        // End Check
+        selected.transfer(trick, true); // transfer to trick (includes graphic effect)
+        System.out.println("Winning card: " + winningCard.toString());
+        System.out.println("Player " + nextPlayer.getPlayerNum() + " play: " + selected.toString() + " from [" + printHand(nextPlayer.getHand().getCardList()) + "]");
+        if (currentWinner(winningCard, trumps) ) {
+            winner = nextPlayer;
+            winningCard = selected;
+        }
+        // End Follow
+
+    }
+
+    private void removeTrick(Hand trick) {
+
+        delay(600);
+        trick.setView(this, new RowLayout(hideLocation, 0));
+        trick.draw();
+
+    }
+
+    private Optional<Integer> playRound() {
+
+        // Returns winner, if any
         // Select and display trump suit
         final WhistCard.Suit trumps = randomEnum(WhistCard.Suit.class);
         final Actor trumpsActor = new Actor("sprites/" + WhistCard.trumpImage[trumps.ordinal()]);
         addActor(trumpsActor, trumpsActorLocation);
         // End trump suit
         Hand trick;
-        Player winner;
-        Card winningCard;
-        WhistCard.Suit lead;
+
+
         Player nextPlayer = players.get(random.nextInt(players.size())); // randomly select player to lead for this round
+
+
         for (int i = 0; i < nbStartCards; i++) {
             trick = new Hand(deck);
-            selected = null;
-            if (nextPlayer.getPlayerNum() == 0) {  // Select lead depending on player type
-                players.get(0).getHand().setTouchEnabled(true);
-                setStatus("Player 0 double-click on card to lead.");
-                while (null == selected) delay(100);
-            } else {
-                setStatusText("Player " + nextPlayer.getPlayerNum() + " thinking...");
-                delay(thinkingTime);
-                // Player selection algorithm
-                selected = randomCard(players.get(nextPlayer.getPlayerNum()).getHand());
-            }
-            // Lead with selected card
-            trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards() + 2) * trickWidth));
-            trick.draw();
-            selected.setVerso(false);
-            // No restrictions on the card being lead
-            lead = (WhistCard.Suit) selected.getSuit();
-            selected.transfer(trick, true); // transfer to trick (includes graphic effect)
-            winner = nextPlayer;
-            winningCard = selected;
-            System.out.println("New trick: Lead Player = " + nextPlayer.getPlayerNum() + ", Lead suit = " + selected.getSuit() + ", Trump suit = " + trumps);
-            System.out.println("Player " + nextPlayer.getPlayerNum() + " play: " + selected.toString() + " from [" + printHand(players.get(nextPlayer.getPlayerNum()).getHand().getCardList()) + "]");
-            // End Lead
+
+            lead(nextPlayer, trick, trumps);
+
             for (int j = 1; j < nbPlayers; j++) {
-                if (nextPlayer.getPlayerNum() + 1 >= nbPlayers) {
-                    nextPlayer = players.get(0);  // From last back to first
-                } else {
-                    nextPlayer = players.get(nextPlayer.getPlayerNum() + 1);
-                }
-                selected = null;
-
-                if (nextPlayer.getPlayerNum() == 0) {
-                    players.get(0).getHand().setTouchEnabled(true);
-                    setStatus("Player 0 double-click on card to follow.");
-                    while (null == selected) delay(100);
-                } else {
-
-                    setStatusText("Player " + nextPlayer.getPlayerNum() + " thinking...");
-                    delay(thinkingTime);
-                    selected = randomCard(nextPlayer.getHand());
-                }
-                // Follow with selected card
-                trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards() + 2) * trickWidth));
-                trick.draw();
-                selected.setVerso(false);  // In case it is upside down
-                // Check: Following card must follow suit if possible
-                if (selected.getSuit() != lead && nextPlayer.getHand().getNumberOfCardsWithSuit(lead) > 0) {
-                    // Rule violation
-                    String violation = "Follow rule broken by player " + nextPlayer.getPlayerNum() + " attempting to play " + selected;
-                    //System.out.println(violation);
-                    if (enforceRules)
-                        try {
-                            throw (new BrokeRuleException(violation));
-                        } catch (BrokeRuleException e) {
-                            e.printStackTrace();
-                            System.out.println("A cheating player spoiled the game!");
-                            System.exit(0);
-                        }
-                }
-                // End Check
-                selected.transfer(trick, true); // transfer to trick (includes graphic effect)
-                System.out.println("Winning card: " + winningCard.toString());
-                System.out.println("Player " + nextPlayer.getPlayerNum() + " play: " + selected.toString() + " from [" + printHand(nextPlayer.getHand().getCardList()) + "]");
-                if ( // beat current winner with higher card
-                        (selected.getSuit() == winningCard.getSuit() && WhistCard.rankGreater(selected, winningCard)) ||
-                                // trumped when non-trump was winning
-                                (selected.getSuit() == trumps && winningCard.getSuit() != trumps)) {
-                    winner = nextPlayer;
-                    winningCard = selected;
-                }
-                // End Follow
+                nextPlayer = getNextPlayer(nextPlayer);
+                follow(nextPlayer, trick, trumps);
             }
-            delay(600);
-            trick.setView(this, new RowLayout(hideLocation, 0));
-            trick.draw();
+
+
+            removeTrick(trick);
+
             nextPlayer = winner;
             System.out.println("Winner: " + winner.getPlayerNum());
             setStatusText("Player " + nextPlayer + " wins trick.");
