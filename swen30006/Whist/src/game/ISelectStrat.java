@@ -7,8 +7,6 @@ import ch.aplu.jcardgame.Hand;
 import java.util.ArrayList;
 
 public interface ISelectStrat {
-    public Card select(Hand hand);
-
-
+    public Card select(Hand hand, Card winningCard);
 
 }

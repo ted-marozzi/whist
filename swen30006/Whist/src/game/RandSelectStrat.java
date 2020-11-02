@@ -11,7 +11,7 @@ public class RandSelectStrat implements ISelectStrat {
     // return random Card from ArrayList
     
     @Override
-    public Card select(Hand hand) {
+    public Card select(Hand hand, Card winningCard) {
         int x = Whist.random.nextInt(hand.getNumberOfCards());
         return hand.get(x);
     }

@@ -31,7 +31,7 @@ public class AI extends Player{
     }
 
     @Override
-    public Card chooseCard(boolean isLead) {
+    public Card chooseCard(boolean isLead, Card winningCard) {
         delay(thinkingTime);
         Hand filteredHand;
         // don't perform filtering if leading
@@ -40,7 +40,7 @@ public class AI extends Player{
         } else {
             filteredHand = filterStrat.getFilteredHand(this.hand);
         }
-        Card chosenCard = selectStrat.select(filteredHand);
+        Card chosenCard = selectStrat.select(filteredHand, winningCard);
         return this.getHand().getCard(chosenCard.getSuit(), chosenCard.getRank());
     }
 

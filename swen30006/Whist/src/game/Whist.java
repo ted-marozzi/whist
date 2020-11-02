@@ -173,7 +173,7 @@ public class Whist extends CardGame {
             leadOrFollow = "follow";
         }
         setStatus(nextPlayer.getStatusText(leadOrFollow));
-        selected = nextPlayer.chooseCard(isLead);
+        selected = nextPlayer.chooseCard(isLead, winningCard);
     }
 
     private void checkSuit(Player nextPlayer)    {

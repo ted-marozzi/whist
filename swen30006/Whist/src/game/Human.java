@@ -29,7 +29,7 @@ public class Human extends Player {
     }
 
     @Override
-    public Card chooseCard(boolean isLead) {
+    public Card chooseCard(boolean isLead, Card winningCard) {
         chosenCard = null;
         getHand().setTouchEnabled(true);
         while (null == chosenCard) {
