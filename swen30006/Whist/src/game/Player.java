@@ -33,7 +33,7 @@ public abstract class Player {
         this.hand = hand;
     }
 
-    public abstract Card chooseCard();
+    public abstract Card chooseCard(boolean isLead);
 
     public abstract String getStatusText(String leadOrFollow);
 

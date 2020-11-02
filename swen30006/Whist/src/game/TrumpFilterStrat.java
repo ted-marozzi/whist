@@ -9,13 +9,8 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class TrumpFilterStrat implements IFilterStrat {
-
     @Override
-    public Hand getFilteredHand(Player player) {
-
-
-        Hand hand = player.getHand();
-
+    public Hand getFilteredHand(Hand hand) {
 
         Hand filteredHand = hand.extractCardsWithSuit(Whist.lead);
 
@@ -27,5 +22,4 @@ public class TrumpFilterStrat implements IFilterStrat {
         }
         return filteredHand;
     }
-
 }

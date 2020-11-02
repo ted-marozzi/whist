@@ -167,13 +167,13 @@ public class Whist extends CardGame {
     private void selectCard(Player nextPlayer, Boolean isLead)  {
         String leadOrFollow;
 
-        if(isLead)  {
+        if (isLead) {
             leadOrFollow = "lead";
-        } else  {
+        } else {
             leadOrFollow = "follow";
         }
         setStatus(nextPlayer.getStatusText(leadOrFollow));
-        selected = nextPlayer.chooseCard();
+        selected = nextPlayer.chooseCard(isLead);
     }
 
     private void checkSuit(Player nextPlayer)    {
@@ -309,12 +309,12 @@ public class Whist extends CardGame {
             e.printStackTrace();
         }
         // set values of variables
-        nbStartCards = Integer.parseInt(config.getProperty("startCards", "13"));
+        nbStartCards = Integer.parseInt(config.getProperty("nbStartCards", "13"));
         winningScore = Integer.parseInt(config.getProperty("winningScore", "24"));
         enforceRules = Boolean.parseBoolean(config.getProperty("enforceRules", "false"));
         thinkingTime = Integer.parseInt(config.getProperty("thinkingTime", "2000"));
-        nbPlayers = Integer.parseInt(config.getProperty("players", "4"));
-
+        nbPlayers = Integer.parseInt(config.getProperty("nbPlayers", "4"));
+        // set random seed
         try {
             seed = Long.parseLong(config.getProperty("seed"));
             random = new Random(seed);

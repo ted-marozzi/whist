@@ -13,8 +13,7 @@ public class AI extends Player{
         int x = Whist.random.nextInt(list.size());
         return list.get(x);
     }
-
-
+    
     private int thinkingTime;
     private IFilterStrat filterStrat;
     private ISelectStrat selectStrat;
@@ -32,11 +31,17 @@ public class AI extends Player{
     }
 
     @Override
-    public Card chooseCard() {
+    public Card chooseCard(boolean isLead) {
         delay(thinkingTime);
-        Hand filteredHand = filterStrat.getFilteredHand(this);
-        Card choosenCard = selectStrat.select(filteredHand);
-        return this.getHand().getCard(choosenCard.getSuit(), choosenCard.getRank());
+        Hand filteredHand;
+        // don't perform filtering if leading
+        if (isLead) {
+            filteredHand = this.hand;
+        } else {
+            filteredHand = filterStrat.getFilteredHand(this.hand);
+        }
+        Card chosenCard = selectStrat.select(filteredHand);
+        return this.getHand().getCard(chosenCard.getSuit(), chosenCard.getRank());
     }
 
     public String getStatusText(String leadOrFollow) {
