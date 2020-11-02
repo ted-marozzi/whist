@@ -1,6 +1,7 @@
 package game;
 
 import ch.aplu.jcardgame.Card;
+import ch.aplu.jcardgame.Hand;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -11,8 +12,8 @@ public class RandSelectStrat implements ISelectStrat {
     // return random Card from ArrayList
     
     @Override
-    public Card select(ArrayList<Card> hand) {
-        int x = random.nextInt(hand.size());
+    public Card select(Hand hand) {
+        int x = random.nextInt(hand.getNumberOfCards());
         return hand.get(x);
     }
 }

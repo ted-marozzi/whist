@@ -34,8 +34,9 @@ public class AI extends Player{
     @Override
     public Card chooseCard() {
         delay(thinkingTime);
-        ArrayList<Card> filteredHand = filterStrat.getFilteredHand(this);
-        return selectStrat.select(filteredHand);
+        Hand filteredHand = filterStrat.getFilteredHand(this);
+        Card choosenCard = selectStrat.select(filteredHand);
+        return this.getHand().getCard(choosenCard.getSuit(), choosenCard.getRank());
     }
 
     public String getStatusText(String leadOrFollow) {

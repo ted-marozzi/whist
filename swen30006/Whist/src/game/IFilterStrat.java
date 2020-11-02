@@ -1,9 +1,8 @@
 package game;
 
-import ch.aplu.jcardgame.Card;
-
-import java.util.ArrayList;
+import ch.aplu.jcardgame.Hand;
 
 public interface IFilterStrat {
-    ArrayList<Card> getFilteredHand(Player player);
+
+    Hand getFilteredHand(Player player);
 }

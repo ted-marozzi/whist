@@ -3,26 +3,26 @@ package game;
 
 
 import ch.aplu.jcardgame.Card;
+import ch.aplu.jcardgame.Hand;
+
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class TrumpFilterStrat implements IFilterStrat {
 
     @Override
-    public ArrayList<Card> getFilteredHand(Player player) {
-        ArrayList<Card> hand = player.hand.getCardList();
-        ArrayList<Card> filteredHand = (ArrayList<Card>) hand.stream()
-                .filter(x -> x.getSuit() == Whist.lead)
-                .collect(Collectors.toList());
+    public Hand getFilteredHand(Player player) {
 
-        if (filteredHand.size() == 0) {
 
-            filteredHand = (ArrayList<Card>) hand.stream()
-                    .filter(x -> x.getSuit() == Whist.trumps ||x.getSuit() == Whist.lead)
-                    .collect(Collectors.toList());
+        Hand hand = player.getHand();
 
+
+        Hand filteredHand = hand.extractCardsWithSuit(Whist.lead);
+
+        if (filteredHand.getNumberOfCards() == 0) {
+            filteredHand = hand.extractCardsWithSuit(Whist.trumps);
         }
-        if (filteredHand.size() == 0) {
+        if (filteredHand.getNumberOfCards() == 0) {
             filteredHand = hand;
         }
         return filteredHand;

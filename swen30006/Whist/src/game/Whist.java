@@ -227,7 +227,6 @@ public class Whist extends CardGame {
 
         selected = null;
         selectCard(nextPlayer, false);
-        // Follow with selected card
 
         // Check: Following card must follow suit if possible
         checkSuit(nextPlayer);
