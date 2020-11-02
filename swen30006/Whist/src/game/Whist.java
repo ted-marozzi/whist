@@ -144,7 +144,7 @@ public class Whist extends CardGame {
 
     private void initRound() {
 
-        
+
         // graphics
         RowLayout[] layouts = new RowLayout[players.size()];
         for (int i = 0; i < players.size(); i++) {
