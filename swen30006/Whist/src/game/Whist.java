@@ -144,17 +144,7 @@ public class Whist extends CardGame {
 
     private void initRound() {
 
-
-
-        // Set up human player for interaction
-        CardListener cardListener = new CardAdapter()  // Human Player plays card
-        {
-            public void leftDoubleClicked(Card card) {
-                selected = card;
-                players.get(0).getHand().setTouchEnabled(false);
-            }
-        };
-        players.get(0).getHand().addCardListener(cardListener);
+        
         // graphics
         RowLayout[] layouts = new RowLayout[players.size()];
         for (int i = 0; i < players.size(); i++) {
@@ -245,11 +235,11 @@ public class Whist extends CardGame {
     }
 
     private void follow(Player nextPlayer, Hand trick, Suit trumps)   {
+        drawTrick(trick);
 
         selected = null;
         selectCard(nextPlayer, false);
         // Follow with selected card
-        drawTrick(trick);
 
         // Check: Following card must follow suit if possible
         checkSuit(nextPlayer);

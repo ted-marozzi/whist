@@ -5,7 +5,7 @@ public abstract class Player {
     protected Hand hand;
     private int score;
 
-    private int playerID;
+    private final int playerID;
 
     public Player(int playerID, Hand hand) {
         this.hand = hand;

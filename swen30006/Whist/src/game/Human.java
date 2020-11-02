@@ -27,7 +27,10 @@ public class Human extends Player {
     public Card chooseCard() {
         chosenCard = null;
         getHand().setTouchEnabled(true);
-        while (null == chosenCard) delay(100);
+        while (null == chosenCard) {
+            delay(100);
+
+        }
         return chosenCard;
     }
 
