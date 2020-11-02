@@ -12,15 +12,20 @@ public class Human extends Player {
     private Card chosenCard;
 
 
-    public Human(int playerID, Hand hand) {
-        super(playerID, hand);
+    public Human(int playerID) {
+        super(playerID);
+
+    }
+
+    @Override
+    public void setHand(Hand hand) {
+        this.hand = hand;
         // TODO Auto-generated constructor stub
         CardListener cardListener = new CardAdapter()  // Human Player plays card
         {
             public void leftDoubleClicked(Card card) { chosenCard = card; hand.setTouchEnabled(false); }
         };
         hand.addCardListener(cardListener);
-
     }
 
     @Override

@@ -36,7 +36,8 @@ public class Whist extends CardGame {
     /**********************************************************************************************
      * Random
      */
-    static final Random random = ThreadLocalRandom.current();
+    private long seed;
+    static Random random;
 
     // return random Enum value
     public static <T extends Enum<?>> T randomEnum(Class<T> clazz) {
@@ -93,19 +94,12 @@ public class Whist extends CardGame {
      */
     private final List<Player> players = new ArrayList<>();
     public int nbPlayers;
-    private Hand[] hands;
     private Card selected;
 
-    private void initPlayers()  {
-
-        hands = deck.dealingOut(nbPlayers, nbStartCards); // Last element of hands is leftover cards; these are ignored
-        for (int i = 0; i<nbPlayers; i++)    {
-            hands[i].sort(Hand.SortType.SUITPRIORITY, true);
-        }
-
-        players.add(new Human(0, hands[0]));
+    private void initPlayers() {
+        players.add(new Human(0));
         for (int i = 1; i < nbPlayers; i++)  {
-            players.add(new AI(i, hands[i], thinkingTime));
+            players.add(new AI(i, thinkingTime));
         }
     }
 
@@ -139,6 +133,25 @@ public class Whist extends CardGame {
     }
 
     private void initRound() {
+        // dealing out cards with random seed
+        Hand pack = deck.toHand(false);
+        List<Hand> hands = new ArrayList<>();
+        for (int i = 0; i < players.size(); i++) {
+            hands.add(new Hand(deck));
+        }
+        for (int i = 0; i < nbStartCards; i++) {
+            for (int j = 0; j < players.size(); j++) {
+                int x = random.nextInt(pack.getNumberOfCards());
+                Card dealt = pack.get(x);
+                dealt.removeFromHand(false);
+                hands.get(j).insert(dealt, false);
+            }
+        }
+        for (int i = 0; i < players.size(); i++) {
+            hands.get(i).sort(Hand.SortType.SUITPRIORITY, true);
+            players.get(i).setHand(hands.get(i));
+        }
+
         // graphics
         RowLayout[] layouts = new RowLayout[players.size()];
         for (int i = 0; i < players.size(); i++) {
@@ -301,6 +314,13 @@ public class Whist extends CardGame {
         enforceRules = Boolean.parseBoolean(config.getProperty("enforceRules", "false"));
         thinkingTime = Integer.parseInt(config.getProperty("thinkingTime", "2000"));
         nbPlayers = Integer.parseInt(config.getProperty("players", "4"));
+
+        try {
+            seed = Long.parseLong(config.getProperty("seed"));
+            random = new Random(seed);
+        } catch (NumberFormatException e) {
+            random = ThreadLocalRandom.current();
+        }
     }
 
     public Whist() {

@@ -19,8 +19,8 @@ public class AI extends Player{
     private IFilterStrat filterStrat;
     private ISelectStrat selectStrat;
 
-    public AI(int playerID, Hand hand, int thinkingTime) {
-        super(playerID, hand);
+    public AI(int playerID, int thinkingTime) {
+        super(playerID);
         try {
             filterStrat = AIStratFactory.getInstance().getFilterStrat();
             selectStrat = AIStratFactory.getInstance().getSelectStrat();

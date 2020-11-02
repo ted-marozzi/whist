@@ -7,8 +7,8 @@ public abstract class Player {
 
     private final int playerID;
 
-    public Player(int playerID, Hand hand) {
-        this.hand = hand;
+    public Player(int playerID) {
+        this.hand = null;
         this.playerID = playerID;
         this.score = 0;
     }
@@ -26,10 +26,12 @@ public abstract class Player {
     }
 
     public Hand getHand() {
-
         return hand;
     }
 
+    public void setHand(Hand hand) {
+        this.hand = hand;
+    }
 
     public abstract Card chooseCard();
 
