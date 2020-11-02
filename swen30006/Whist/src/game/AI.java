@@ -33,7 +33,7 @@ public class AI extends Player{
 
     @Override
     public Card chooseCard() {
-        delay(getThinkingTime());
+        delay(thinkingTime);
         ArrayList<Card> filteredHand = filterStrat.getFilteredHand(this);
         return selectStrat.select(filteredHand);
     }

@@ -4,8 +4,7 @@ import ch.aplu.jcardgame.*;
 public abstract class Player {
     protected Hand hand;
     private int score;
-    private int clickDelay;
-    private int thinkingTime;
+
     private int playerID;
 
     public Player(int playerID, Hand hand) {
@@ -31,13 +30,7 @@ public abstract class Player {
         return hand;
     }
 
-    public int getClickDelay() {
-        return clickDelay;
-    }
 
-    public int getThinkingTime() {
-        return thinkingTime;
-    }
     public abstract Card chooseCard();
 
     public abstract String getStatusText(String leadOrFollow);
