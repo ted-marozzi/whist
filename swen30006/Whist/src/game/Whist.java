@@ -174,11 +174,11 @@ public class Whist extends CardGame {
     private void checkSuit(Player nextPlayer)    {
 
         if (selected.getSuit() != lead && nextPlayer.getHand().getNumberOfCardsWithSuit(lead) > 0
-            || selected.getSuit() != trumps && nextPlayer.getHand().getNumberOfCardsWithSuit(trumps) >  0) {
+            && selected.getSuit() != trumps && nextPlayer.getHand().getNumberOfCardsWithSuit(trumps) > 0) {
             // Rule violation
             String violation = "Follow rule broken by player " + nextPlayer.getPlayerID() + " attempting to play " + selected;
             //System.out.println(violation);
-            if (enforceRules)
+            if (enforceRules) {
                 try {
                     throw (new BrokeRuleException(violation));
                 } catch (BrokeRuleException e) {
@@ -186,6 +186,7 @@ public class Whist extends CardGame {
                     System.out.println("A cheating player spoiled the game!");
                     System.exit(0);
                 }
+            }
         }
 
     }
@@ -344,7 +345,6 @@ public class Whist extends CardGame {
     }
 
     public static void main(String[] args) {
-
         new Whist();
     }
 
