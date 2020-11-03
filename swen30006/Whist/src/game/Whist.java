@@ -171,10 +171,10 @@ public class Whist extends CardGame {
         }
     }
 
-    private void checkSuit(Player nextPlayer)    {
-
-        if (selected.getSuit() != lead && nextPlayer.getHand().getNumberOfCardsWithSuit(lead) > 0
-            && selected.getSuit() != trumps && nextPlayer.getHand().getNumberOfCardsWithSuit(trumps) > 0) {
+    private void checkSuit(Player nextPlayer) {
+        if (selected.getSuit() != lead && selected.getSuit() != trumps &&
+                (nextPlayer.getHand().getNumberOfCardsWithSuit(lead) > 0
+                || nextPlayer.getHand().getNumberOfCardsWithSuit(trumps) > 0)) {
             // Rule violation
             String violation = "Follow rule broken by player " + nextPlayer.getPlayerID() + " attempting to play " + selected;
             //System.out.println(violation);
