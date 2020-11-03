@@ -18,11 +18,13 @@ public class AI extends Player{
     private IFilterStrat filterStrat;
     private ISelectStrat selectStrat;
 
-    public AI(int playerID, int thinkingTime) {
+    public AI(int playerID, int thinkingTime, String playerProperty) {
         super(playerID);
         try {
-            filterStrat = AIStratFactory.getInstance().getFilterStrat();
-            selectStrat = AIStratFactory.getInstance().getSelectStrat();
+            String filterProperty = playerProperty.split(":")[0];
+            String selectProperty = playerProperty.split(":")[1];
+            filterStrat = AIStratFactory.getInstance().getFilterStrat(filterProperty);
+            selectStrat = AIStratFactory.getInstance().getSelectStrat(selectProperty);
         } catch (InstantiationException | IllegalAccessException
                 | ClassNotFoundException e) {
             e.printStackTrace();

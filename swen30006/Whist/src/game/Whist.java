@@ -67,7 +67,7 @@ public class Whist extends CardGame {
      * Locations and Graphics
      */
     /* Up and Right refer to the reference frame of the Player */
-    private static final int WIDTH = 700, HEIGHT = 1000, HAND_PAD = 75, UP_PAD = 25, RIGHT_PAD = 125;
+    private static final int WIDTH = 700, HEIGHT = 700, HAND_PAD = 75, UP_PAD = 25, RIGHT_PAD = 125;
     private final Location[] handLocations = {
             new Location(WIDTH/2, HEIGHT-HAND_PAD),
             new Location(HAND_PAD, HEIGHT/2),
@@ -92,15 +92,19 @@ public class Whist extends CardGame {
     /**********************************************************************************************
      * Players
      */
-    private final List<Player> players = new ArrayList<>();
+    private List<String> playerProperties = new ArrayList<>();
     private int nbPlayers;
+    private final List<Player> players = new ArrayList<>();
     private Card selected;
 
     private void initPlayers() {
-        players.add(new Human(0));
-        players.add(new Human(1));
-        for (int i = 2; i < nbPlayers; i++)  {
-            players.add(new AI(i, thinkingTime));
+        for (int i = 0; i < playerProperties.size(); i++) {
+            String playerProperty = playerProperties.get(i);
+            if (playerProperty.equals("human")) {
+                players.add(new Human(i));
+            } else {
+                players.add(new AI(i, thinkingTime, playerProperty));
+            }
         }
     }
 
@@ -167,18 +171,6 @@ public class Whist extends CardGame {
         }
     }
 
-    private void selectCard(Player nextPlayer, Boolean isLead)  {
-        String leadOrFollow;
-
-        if (isLead) {
-            leadOrFollow = "lead";
-        } else {
-            leadOrFollow = "follow";
-        }
-        setStatus(nextPlayer.getStatusText(leadOrFollow));
-        selected = nextPlayer.chooseCard(isLead, winningCard);
-    }
-
     private void checkSuit(Player nextPlayer)    {
 
         if (selected.getSuit() != lead && nextPlayer.getHand().getNumberOfCardsWithSuit(lead) > 0
@@ -223,8 +215,8 @@ public class Whist extends CardGame {
     }
 
     private void lead(Player nextPlayer, Hand trick, Suit trumps) {
-        selected = null;
-        selectCard(nextPlayer, true);
+        setStatus(nextPlayer.getStatusText("lead"));
+        selected = nextPlayer.chooseCard(true, winningCard);
         drawTrick(trick);
 
         // No restrictions on the card being lead
@@ -240,10 +232,9 @@ public class Whist extends CardGame {
     }
 
     private void follow(Player nextPlayer, Hand trick, Suit trumps)   {
+        setStatus(nextPlayer.getStatusText("follow"));
+        selected = nextPlayer.chooseCard(false, winningCard);
         drawTrick(trick);
-
-        selected = null;
-        selectCard(nextPlayer, false);
 
         // Check: Following card must follow suit if possible
         checkSuit(nextPlayer);
@@ -312,18 +303,26 @@ public class Whist extends CardGame {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        // set values of variables
-        nbStartCards = Integer.parseInt(config.getProperty("nbStartCards", "13"));
-        winningScore = Integer.parseInt(config.getProperty("winningScore", "24"));
-        enforceRules = Boolean.parseBoolean(config.getProperty("enforceRules", "false"));
-        thinkingTime = Integer.parseInt(config.getProperty("thinkingTime", "2000"));
-        nbPlayers = Integer.parseInt(config.getProperty("nbPlayers", "4"));
         // set random seed
         try {
             seed = Long.parseLong(config.getProperty("seed"));
             random = new Random(seed);
         } catch (NumberFormatException e) {
             random = ThreadLocalRandom.current();
+        }
+        // set values of variables
+        nbStartCards = Integer.parseInt(config.getProperty("nbStartCards", "13"));
+        winningScore = Integer.parseInt(config.getProperty("winningScore", "24"));
+        enforceRules = Boolean.parseBoolean(config.getProperty("enforceRules", "false"));
+        thinkingTime = Integer.parseInt(config.getProperty("thinkingTime", "2000"));
+        nbPlayers = Integer.parseInt(config.getProperty("nbPlayers", "4"));
+        // set player properties
+        for (int i = 0; i < nbPlayers; i++) {
+            if (i == 0) {
+                playerProperties.add(config.getProperty("player"+i, "human"));
+            } else {
+                playerProperties.add(config.getProperty("player"+i, "no:random"));
+            }
         }
     }
 

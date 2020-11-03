@@ -11,7 +11,6 @@ public class Human extends Player {
 
     private Card chosenCard;
 
-
     public Human(int playerID) {
         super(playerID);
 
@@ -39,9 +38,7 @@ public class Human extends Player {
     }
 
     public String getStatusText(String leadOrFollow) {
-        return "Player "+ getPlayerID() +" double-click on card to " + leadOrFollow + ".";
+        return "Player " + getPlayerID() + " double-click on card to " + leadOrFollow + ".";
     }
-
-
 
 }
