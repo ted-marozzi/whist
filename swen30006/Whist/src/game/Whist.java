@@ -50,8 +50,8 @@ public class Whist extends CardGame {
      */
     private final String version = "1.0";
 
-    public int nbStartCards;
-    public int winningScore;
+    private int nbStartCards;
+    private int winningScore;
     private boolean enforceRules;
     private int thinkingTime;
 
@@ -67,7 +67,7 @@ public class Whist extends CardGame {
      * Locations and Graphics
      */
     /* Up and Right refer to the reference frame of the Player */
-    private static final int WIDTH = 700, HEIGHT = WIDTH, HAND_PAD = 75, UP_PAD = 25, RIGHT_PAD = 125;
+    private static final int WIDTH = 700, HEIGHT = 1000, HAND_PAD = 75, UP_PAD = 25, RIGHT_PAD = 125;
     private final Location[] handLocations = {
             new Location(WIDTH/2, HEIGHT-HAND_PAD),
             new Location(HAND_PAD, HEIGHT/2),
@@ -93,12 +93,13 @@ public class Whist extends CardGame {
      * Players
      */
     private final List<Player> players = new ArrayList<>();
-    public int nbPlayers;
+    private int nbPlayers;
     private Card selected;
 
     private void initPlayers() {
         players.add(new Human(0));
-        for (int i = 1; i < nbPlayers; i++)  {
+        players.add(new Human(1));
+        for (int i = 2; i < nbPlayers; i++)  {
             players.add(new AI(i, thinkingTime));
         }
     }
@@ -135,10 +136,12 @@ public class Whist extends CardGame {
     private void initRound() {
         // dealing out cards with random seed
         Hand pack = deck.toHand(false);
+
         List<Hand> hands = new ArrayList<>();
         for (int i = 0; i < players.size(); i++) {
             hands.add(new Hand(deck));
         }
+
         for (int i = 0; i < nbStartCards; i++) {
             for (int j = 0; j < players.size(); j++) {
                 int x = random.nextInt(pack.getNumberOfCards());
@@ -178,7 +181,8 @@ public class Whist extends CardGame {
 
     private void checkSuit(Player nextPlayer)    {
 
-        if (selected.getSuit() != lead && nextPlayer.getHand().getNumberOfCardsWithSuit(lead) > 0) {
+        if (selected.getSuit() != lead && nextPlayer.getHand().getNumberOfCardsWithSuit(lead) > 0
+            || selected.getSuit() != trumps && nextPlayer.getHand().getNumberOfCardsWithSuit(trumps) >  0) {
             // Rule violation
             String violation = "Follow rule broken by player " + nextPlayer.getPlayerID() + " attempting to play " + selected;
             //System.out.println(violation);
@@ -341,6 +345,7 @@ public class Whist extends CardGame {
     }
 
     public static void main(String[] args) {
+
         new Whist();
     }
 

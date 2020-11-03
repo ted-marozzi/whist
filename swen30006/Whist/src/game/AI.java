@@ -36,9 +36,9 @@ public class AI extends Player{
         Hand filteredHand;
         // don't perform filtering if leading
         if (isLead) {
-            filteredHand = this.hand;
+            filteredHand = getHand();
         } else {
-            filteredHand = filterStrat.getFilteredHand(this.hand);
+            filteredHand = filterStrat.getFilteredHand(getHand());
         }
         Card chosenCard = selectStrat.select(filteredHand, winningCard);
         return this.getHand().getCard(chosenCard.getSuit(), chosenCard.getRank());
