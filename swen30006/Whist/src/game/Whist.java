@@ -13,6 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @SuppressWarnings("serial")
 public class Whist extends CardGame {
+
     /**********************************************************************************************
      * Card Meta
      */
@@ -36,6 +37,7 @@ public class Whist extends CardGame {
     /**********************************************************************************************
      * Random
      */
+
     private long seed;
     static Random random;
 
@@ -48,6 +50,7 @@ public class Whist extends CardGame {
     /**********************************************************************************************
      * Variables
      */
+
     private final String version = "1.0";
 
     private int nbStartCards;
@@ -66,6 +69,7 @@ public class Whist extends CardGame {
     /**********************************************************************************************
      * Locations and Graphics
      */
+
     /* Up and Right refer to the reference frame of the Player */
     private static final int WIDTH = 700, HEIGHT = 700, HAND_PAD = 75, UP_PAD = 25, RIGHT_PAD = 125;
     private final Location[] handLocations = {
@@ -92,6 +96,7 @@ public class Whist extends CardGame {
     /**********************************************************************************************
      * Players
      */
+
     private List<String> playerProperties = new ArrayList<>();
     private int nbPlayers;
     private final List<Player> players = new ArrayList<>();
@@ -118,7 +123,7 @@ public class Whist extends CardGame {
     }
 
     private void initScore() {
-        for (Player player:players) {
+        for (Player player : players) {
             scoreActors[player.getPlayerID()] = new TextActor(Integer.toString(player.getScore()), Color.WHITE, bgColor, bigFont);
             addActor(scoreActors[player.getPlayerID()], scoreLocations[player.getPlayerID()]);
         }
@@ -138,7 +143,7 @@ public class Whist extends CardGame {
     }
 
     private void initRound() {
-        // dealing out cards with random seed
+        // deal out cards with random seed
         Hand pack = deck.toHand(false);
 
         List<Hand> hands = new ArrayList<>();
@@ -154,6 +159,7 @@ public class Whist extends CardGame {
                 hands.get(j).insert(dealt, false);
             }
         }
+
         for (int i = 0; i < players.size(); i++) {
             hands.get(i).sort(Hand.SortType.SUITPRIORITY, true);
             players.get(i).setHand(hands.get(i));
@@ -192,16 +198,13 @@ public class Whist extends CardGame {
     }
 
     private void drawTrick(Hand trick) {
-
         // Lead with selected card
         trick.setView(this, new RowLayout(trickLocation, (trick.getNumberOfCards() + 2) * trickWidth));
         trick.draw();
         selected.setVerso(false);
-
     }
 
     private Player getNextPlayer(Player lastPlayer)    {
-
         if (lastPlayer.getPlayerID() + 1 >= nbPlayers) {
             return players.get(0);  // From last back to first
         } else {
@@ -261,7 +264,7 @@ public class Whist extends CardGame {
 
         // Returns winner, if any
         // Select and display trump suit
-        final Suit trumps = randomEnum(Suit.class);
+        trumps = randomEnum(Suit.class);
         final Actor trumpsActor = new Actor("sprites/" + trumpImage[trumps.ordinal()]);
         addActor(trumpsActor, trumpsActorLocation);
         // End trump suit
@@ -288,7 +291,7 @@ public class Whist extends CardGame {
             nextPlayer.increaseScore();
             updateScore(nextPlayer);
 
-            if (nextPlayer.getScore()==winningScore) return Optional.of(nextPlayer.getPlayerID());
+            if (nextPlayer.getScore() == winningScore) return Optional.of(nextPlayer.getPlayerID());
         }
         removeActor(trumpsActor);
         return Optional.empty();
