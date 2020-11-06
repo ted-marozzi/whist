@@ -15,20 +15,17 @@ public class AI extends Player {
     }
     
     private final int thinkingTime;
-    private final IFilterStrat filterStrat;
-    private final ISelectStrat selectStrat;
+    private IFilterStrat filterStrat;
+    private ISelectStrat selectStrat;
 
     public AI(int playerID, int thinkingTime, String playerProperty) {
         super(playerID);
-        try {
-            String filterProperty = playerProperty.split(":")[0];
-            String selectProperty = playerProperty.split(":")[1];
-            filterStrat = AIStratFactory.getInstance().getFilterStrat(filterProperty);
-            selectStrat = AIStratFactory.getInstance().getSelectStrat(selectProperty);
-        } catch (InstantiationException | IllegalAccessException
-                | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+
+        String filterProperty = playerProperty.split(":")[0];
+        String selectProperty = playerProperty.split(":")[1];
+        filterStrat = AIStratFactory.getInstance().getFilterStrat(filterProperty);
+        selectStrat = AIStratFactory.getInstance().getSelectStrat(selectProperty);
+
         this.thinkingTime = thinkingTime;
     }
 

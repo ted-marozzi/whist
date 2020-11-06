@@ -16,32 +16,24 @@ public class AIStratFactory {
 
         public IFilterStrat getFilterStrat(String filterProperty) {
             IFilterStrat product = null;
-            switch (filterProperty) {
-                case "no":
-                    product = new NoFilterStrat();
-                    break;
-                case "naive":
-                    product = new NaiveFilterStrat();
-                    break;
-                case "trump":
-                    product = new TrumpFilterStrat();
-                    break;
+            if ("no".equals(filterProperty)) {
+                product = new NoFilterStrat();
+            } else if ("naive".equals(filterProperty)) {
+                product = new NaiveFilterStrat();
+            } else if ("trump".equals(filterProperty)) {
+                product = new TrumpFilterStrat();
             }
             return product;
         }
 
         public ISelectStrat getSelectStrat(String selectProperty) {
             ISelectStrat product = null;
-            switch (selectProperty) {
-                case "random":
-                    product = new RandSelectStrat();
-                    break;
-                case "highestRank":
-                    product = new HighestRankSelectStrat();
-                    break;
-                case "smart":
-                    product = new RandSelectStrat(); // TO REPLACE
-                    break;
+            if ("random".equals(selectProperty)) {
+                product = new RandSelectStrat();
+            } else if ("highestRank".equals(selectProperty)) {
+                product = new HighestRankSelectStrat();
+            } else if ("smart".equals(selectProperty)) {
+                product = new RandSelectStrat(); // TO REPLACE
             }
             return product;
         }
