@@ -1,39 +1,47 @@
 package game;
 
 public class AIStratFactory {
-        private static AIStratFactory AIStratFactory;
+        private static AIStratFactory instance;
 
         private AIStratFactory() {
             // TODO Auto-generated constructor stub
         }
 
         public static AIStratFactory getInstance() {
-            if (AIStratFactory == null) {
-                AIStratFactory = new AIStratFactory();
+            if (instance == null) {
+                instance = new AIStratFactory();
             }
-            return AIStratFactory;
+            return instance;
         }
 
-        public IFilterStrat getFilterStrat(String filterProperty) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-//		String className = System.getProperty( "fileteringpricingstrategy.class.name" );
-//		IFilteringStrategy strategy = (IFilteringStrategy) Class.forName( className ).newInstance();
+        public IFilterStrat getFilterStrat(String filterProperty) {
             IFilterStrat product = null;
-            if (filterProperty.equals("no")) {
-                product = new NoFilterStrat();
-            } else if (filterProperty.equals("naive")) {
-                product = new NaiveFilterStrat();
-            } else if (filterProperty.equals("trump")) {
-                product = new TrumpFilterStrat();
+            switch (filterProperty) {
+                case "no":
+                    product = new NoFilterStrat();
+                    break;
+                case "naive":
+                    product = new NaiveFilterStrat();
+                    break;
+                case "trump":
+                    product = new TrumpFilterStrat();
+                    break;
             }
             return product;
         }
 
-        public ISelectStrat getSelectStrat(String selectProperty) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        public ISelectStrat getSelectStrat(String selectProperty) {
             ISelectStrat product = null;
-            if (selectProperty.equals("random")) {
-                product = new RandSelectStrat();
-            } else if (selectProperty.equals("highestRank")) {
-                product = new HighestRankSelectStrat();
+            switch (selectProperty) {
+                case "random":
+                    product = new RandSelectStrat();
+                    break;
+                case "highestRank":
+                    product = new HighestRankSelectStrat();
+                    break;
+                case "smart":
+                    product = new RandSelectStrat(); // TO REPLACE
+                    break;
             }
             return product;
         }

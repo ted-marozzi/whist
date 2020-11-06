@@ -6,7 +6,7 @@ import static ch.aplu.jgamegrid.GameGrid.delay;
 import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
 
-public class AI extends Player{
+public class AI extends Player {
 
     // return random Card from ArrayList
     public static Card randomCard(ArrayList<Card> list) {
@@ -14,9 +14,9 @@ public class AI extends Player{
         return list.get(x);
     }
     
-    private int thinkingTime;
-    private IFilterStrat filterStrat;
-    private ISelectStrat selectStrat;
+    private final int thinkingTime;
+    private final IFilterStrat filterStrat;
+    private final ISelectStrat selectStrat;
 
     public AI(int playerID, int thinkingTime, String playerProperty) {
         super(playerID);

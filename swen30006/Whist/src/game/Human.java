@@ -1,4 +1,3 @@
-
 package game;
 
 import ch.aplu.jcardgame.Card;
@@ -13,7 +12,6 @@ public class Human extends Player {
 
     public Human(int playerID) {
         super(playerID);
-
     }
 
     @Override

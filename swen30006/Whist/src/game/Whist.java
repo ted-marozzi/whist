@@ -6,7 +6,6 @@ import ch.aplu.jgamegrid.*;
 import java.awt.Color;
 import java.awt.Font;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -28,7 +27,7 @@ public class Whist extends CardGame {
         ACE, KING, QUEEN, JACK, TEN, NINE, EIGHT, SEVEN, SIX, FIVE, FOUR, THREE, TWO
     }
 
-    public static final boolean rankGreater(Card card1, Card card2) {
+    public static boolean rankGreater(Card card1, Card card2) {
         return card1.getRankId() < card2.getRankId(); // Warning: Reverse rank order of cards (see comment on enum)
     }
 
@@ -38,7 +37,6 @@ public class Whist extends CardGame {
      * Random
      */
 
-    private long seed;
     static Random random;
 
     // return random Enum value
@@ -53,13 +51,11 @@ public class Whist extends CardGame {
 
     private final String version = "1.0";
 
-    private int nbStartCards;
-    private int winningScore;
-    private boolean enforceRules;
-    private int thinkingTime;
+    private static int nbStartCards;
+    private static int winningScore;
+    private static boolean enforceRules;
+    private static int thinkingTime;
 
-    private final int handWidth = 400;
-    private final int trickWidth = 40;
     private final Deck deck = new Deck(Suit.values(), Rank.values(), "cover");
     private Player winner = null;
     private Card winningCard = null;
@@ -70,35 +66,41 @@ public class Whist extends CardGame {
      * Locations and Graphics
      */
 
+    private final int handWidth = 400;
+    private final int trickWidth = 40;
+
     /* Up and Right refer to the reference frame of the Player */
-    private static final int WIDTH = 700, HEIGHT = 700, HAND_PAD = 75, UP_PAD = 25, RIGHT_PAD = 125;
+    private static int width, height;
+    private final int HAND_PAD = 75, UP_PAD = 25, RIGHT_PAD = 125;
     private final Location[] handLocations = {
-            new Location(WIDTH/2, HEIGHT-HAND_PAD),
-            new Location(HAND_PAD, HEIGHT/2),
-            new Location(WIDTH/2, HAND_PAD),
-            new Location(WIDTH-HAND_PAD, HEIGHT/2)
+            new Location(width/2, height-HAND_PAD),
+            new Location(HAND_PAD, height/2),
+            new Location(width/2, HAND_PAD),
+            new Location(width-HAND_PAD, height/2)
     };
 
     private final Location[] scoreLocations = {
-            new Location(WIDTH-RIGHT_PAD, HEIGHT-UP_PAD),
-            new Location(UP_PAD, HEIGHT-RIGHT_PAD),
+            new Location(width-RIGHT_PAD, height-UP_PAD),
+            new Location(UP_PAD, height-RIGHT_PAD),
             new Location(RIGHT_PAD, UP_PAD),
-            new Location(WIDTH-UP_PAD, RIGHT_PAD)
+            new Location(width-UP_PAD, RIGHT_PAD)
     };
 
-    private Actor[] scoreActors = {null, null, null, null};
-    private final Location trickLocation = new Location(WIDTH/2, HEIGHT/2);
-    private final Location textLocation = new Location(WIDTH/2, HEIGHT/2+100);
+    private final Actor[] scoreActors = {null, null, null, null};
+    private final Location trickLocation = new Location(width/2, height/2);
+    private final Location textLocation = new Location(width/2, height/2+100);
     private final Location hideLocation = new Location(-500, -500);
-    private Location trumpsActorLocation = new Location(50, 50);
-    Font bigFont = new Font("Serif", Font.BOLD, 36);
+    private final Location trumpsActorLocation = new Location(50, 50);
+
+    private static int fontSize;
+    Font bigFont = new Font("Serif", Font.BOLD, fontSize);
 
     /**********************************************************************************************
      * Players
      */
 
-    private List<String> playerProperties = new ArrayList<>();
-    private int nbPlayers;
+    private static final List<String> playerProperties = new ArrayList<>();
+    private static int nbPlayers;
     private final List<Player> players = new ArrayList<>();
     private Card selected;
 
@@ -194,7 +196,6 @@ public class Whist extends CardGame {
                 }
             }
         }
-
     }
 
     private void drawTrick(Hand trick) {
@@ -232,7 +233,6 @@ public class Whist extends CardGame {
 
         System.out.println("New trick: Lead Player = " + nextPlayer.getPlayerID() + ", Lead suit = " + selected.getSuit() + ", Trump suit = " + trumps);
         System.out.println("Player " + nextPlayer.getPlayerID() + " play: " + selected.toString() + " from [" + printHand(players.get(nextPlayer.getPlayerID()).getHand().getCardList()) + "]");
-        // End Lead
     }
 
     private void follow(Player nextPlayer, Hand trick, Suit trumps)   {
@@ -250,8 +250,6 @@ public class Whist extends CardGame {
             winner = nextPlayer;
             winningCard = selected;
         }
-        // End Follow
-
     }
 
     private void removeTrick(Hand trick) {
@@ -260,17 +258,17 @@ public class Whist extends CardGame {
         trick.draw();
     }
 
+    // Returns winner, if any
     private Optional<Integer> playRound() {
-
-        // Returns winner, if any
         // Select and display trump suit
         trumps = randomEnum(Suit.class);
         final Actor trumpsActor = new Actor("sprites/" + trumpImage[trumps.ordinal()]);
         addActor(trumpsActor, trumpsActorLocation);
-        // End trump suit
+
         Hand trick;
 
-        Player nextPlayer = players.get(random.nextInt(players.size())); // randomly select player to lead for this round
+        // randomly select player to lead for this round
+        Player nextPlayer = players.get(random.nextInt(players.size()));
 
         for (int i = 0; i < nbStartCards; i++) {
             trick = new Hand(deck);
@@ -297,24 +295,25 @@ public class Whist extends CardGame {
         return Optional.empty();
     }
 
-    private void setProperties() {
+    private static void setProperties() {
         Properties config = new Properties();
         // read properties file
         try {
             config.load(new FileInputStream("whist.properties"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
         // set random seed
         try {
-            seed = Long.parseLong(config.getProperty("seed"));
+            long seed = Long.parseLong(config.getProperty("seed"));
             random = new Random(seed);
         } catch (NumberFormatException e) {
             random = ThreadLocalRandom.current();
         }
-        // set values of variables
+        // set values of other properties
+        height = Integer.parseInt(config.getProperty("height", "700"));
+        width = Integer.parseInt(config.getProperty("width", "700"));
+        fontSize = Integer.parseInt(config.getProperty("fontSize", "36"));
         nbStartCards = Integer.parseInt(config.getProperty("nbStartCards", "13"));
         winningScore = Integer.parseInt(config.getProperty("winningScore", "24"));
         enforceRules = Boolean.parseBoolean(config.getProperty("enforceRules", "false"));
@@ -322,17 +321,16 @@ public class Whist extends CardGame {
         nbPlayers = Integer.parseInt(config.getProperty("nbPlayers", "4"));
         // set player properties
         for (int i = 0; i < nbPlayers; i++) {
-            if (i == 0) {
+            if (i == 0) { // player0 is human by default
                 playerProperties.add(config.getProperty("player"+i, "human"));
-            } else {
+            } else { // all other players are random NPCs by default
                 playerProperties.add(config.getProperty("player"+i, "no:random"));
             }
         }
     }
 
     public Whist() {
-        super(WIDTH, HEIGHT, 30);
-        setProperties();
+        super(width, height, 30);
         setTitle("Whist (V" + version + ") Constructed for UofM SWEN30006 with JGameGrid (www.aplu.ch)");
         setStatusText("Initializing...");
         initPlayers();
@@ -348,6 +346,7 @@ public class Whist extends CardGame {
     }
 
     public static void main(String[] args) {
+        setProperties();
         new Whist();
     }
 
