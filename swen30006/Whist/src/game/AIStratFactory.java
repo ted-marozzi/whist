@@ -33,7 +33,7 @@ public class AIStratFactory {
             } else if ("highestRank".equals(selectProperty)) {
                 product = new HighestRankSelectStrat();
             } else if ("smart".equals(selectProperty)) {
-                product = new RandSelectStrat(); // TO REPLACE
+                product = new SmartSelectStrat();
             }
             return product;
         }

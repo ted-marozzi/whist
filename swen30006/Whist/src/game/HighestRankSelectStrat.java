@@ -6,7 +6,7 @@ import ch.aplu.jcardgame.Hand;
 public class HighestRankSelectStrat implements ISelectStrat {
     @Override
     public Card select(Hand hand, Card winningCard) {
-        hand.sort(Hand.SortType.RANKPRIORITY, true);
+        hand.sort(Hand.SortType.RANKPRIORITY, false);
         return hand.get(0);
     }
 }

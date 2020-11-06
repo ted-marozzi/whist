@@ -281,25 +281,26 @@ public class Whist extends CardGame {
             }
 
             removeTrick(trick);
+            winningCard = null;
 
             nextPlayer = winner;
             System.out.println("Winner: " + winner.getPlayerID());
-            setStatusText("Player " + nextPlayer + " wins trick.");
+            setStatusText("Player " + winner.getPlayerID() + " wins trick.");
 
-            nextPlayer.increaseScore();
-            updateScore(nextPlayer);
+            winner.increaseScore();
+            updateScore(winner);
 
-            if (nextPlayer.getScore() == winningScore) return Optional.of(nextPlayer.getPlayerID());
+            if (winner.getScore() == winningScore) return Optional.of(winner.getPlayerID());
         }
         removeActor(trumpsActor);
         return Optional.empty();
     }
 
-    private static void setProperties() {
+    private static void setProperties(String filename) {
         Properties config = new Properties();
         // read properties file
         try {
-            config.load(new FileInputStream("whist.properties"));
+            config.load(new FileInputStream(filename));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -346,7 +347,7 @@ public class Whist extends CardGame {
     }
 
     public static void main(String[] args) {
-        setProperties();
+        setProperties("whist.properties");
         new Whist();
     }
 

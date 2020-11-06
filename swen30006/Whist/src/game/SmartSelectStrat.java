@@ -4,35 +4,42 @@ import ch.aplu.jcardgame.Card;
 import ch.aplu.jcardgame.Hand;
 
 public class SmartSelectStrat implements ISelectStrat {
-
     @Override
     public Card select(Hand hand, Card winningCard) {
-
+        if (winningCard == null) {
+            return highestRank(hand);
+        }
 
         Hand trumpSuit = hand.extractCardsWithSuit(Whist.trumps);
         Hand winningSuit = hand.extractCardsWithSuit(winningCard.getSuit());
-        Card toPlay = null;
-        // Check if can be winning by winning suit
-        if(!winningSuit.isEmpty())    {
-            Card bestWinning = highestRank(winningSuit);
-            if(Whist.rankGreater(bestWinning, winningCard))   {
-                toPlay =  bestWinning;
+        Card selectedCard = null;
+
+        // Check if can win by current winning suit or lowest trumps
+        if (winningCard.getSuit() != Whist.trumps) {
+            if (!winningSuit.isEmpty()) {
+                Card bestWinning = highestRank(winningSuit);
+                if (Whist.rankGreater(bestWinning, winningCard)) {
+                    selectedCard = bestWinning;
+                } else if (!trumpSuit.isEmpty()) {
+                    selectedCard = lowestRank(trumpSuit);
+                }
+            } else if (!trumpSuit.isEmpty()) {
+                selectedCard = lowestRank(trumpSuit);
             }
         }
-        // Check if can win by lowest trumps
-        if(!trumpSuit.isEmpty() && Whist.trumps != winningCard.getSuit() ) {
-            toPlay = lowestRank(trumpSuit);
-        } else if(!trumpSuit.isEmpty()) {
-            // Check if can win by highest trumps
+        // Check if can win by highest trumps
+        else if (!trumpSuit.isEmpty()) {
             Card bestTrumps = highestRank(trumpSuit);
             if (Whist.rankGreater(bestTrumps, winningCard)) {
-                toPlay = bestTrumps;
-            } else {
-                // If not play the lowest rank card possible
-                toPlay = lowestRank(hand);
+                selectedCard = bestTrumps;
             }
         }
-        return toPlay;
+        // If no conditions were met, select the wost card
+        if (selectedCard == null) {
+            selectedCard = lowestRank(hand);
+        }
+
+        return hand.getCard(selectedCard.getSuit(), selectedCard.getRank());
     }
 
     private Card highestRank(Hand hand) {
@@ -44,6 +51,4 @@ public class SmartSelectStrat implements ISelectStrat {
         hand.sort(Hand.SortType.RANKPRIORITY, false);
         return hand.getLast();
     }
-
-
 }
