@@ -34,7 +34,7 @@ public class SmartSelectStrat implements ISelectStrat {
                 selectedCard = bestTrumps;
             }
         }
-        // If no conditions were met, select the wost card
+        // If no conditions were met, select the worst card
         if (selectedCard == null) {
             selectedCard = lowestRank(hand);
         }

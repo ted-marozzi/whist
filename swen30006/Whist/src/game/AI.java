@@ -30,7 +30,8 @@ public class AI extends Player {
         } else {
             filteredHand = filterStrat.getFilteredHand(getHand());
         }
-        return selectStrat.select(filteredHand, winningCard);
+        Card selected = selectStrat.select(filteredHand, winningCard);
+        return getHand().getCard(selected.getSuit(), selected.getRank());
     }
 
     public String getStatusText(String leadOrFollow) {
