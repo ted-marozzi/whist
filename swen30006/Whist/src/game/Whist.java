@@ -431,7 +431,7 @@ public class Whist extends CardGame {
 
     // Driver program to set up properties and play the game
     public static void main(String[] args) {
-        setProperties("smart.properties");
+        setProperties("whist.properties");
         new Whist();
     }
 
