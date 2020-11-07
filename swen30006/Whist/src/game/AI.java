@@ -1,4 +1,6 @@
-
+/**
+ * Code by by Jake Hum, Edward Marozzi, Fei Yuan - Group 4
+ */
 package game;
 
 import static ch.aplu.jgamegrid.GameGrid.delay;
