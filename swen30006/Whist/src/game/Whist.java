@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 @SuppressWarnings("serial")
 public class Whist extends CardGame {
 
-    private String string;
+
 
     /**********************************************************************************************
      * Card Meta
@@ -146,7 +146,7 @@ public class Whist extends CardGame {
     }
 
     /**
-     * Initilaise player scores to be displayed
+     * Initialise player scores to be displayed
      */
     private void initScore() {
         for (Player player : players) {
@@ -168,7 +168,6 @@ public class Whist extends CardGame {
      * Methods
      */
     public void setStatus(String string) {
-        this.string = string;
         setStatusText(string);
     }
 
