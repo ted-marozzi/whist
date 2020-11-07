@@ -14,6 +14,13 @@ public class AI extends Player {
     private final IFilterStrat filterStrat;
     private final ISelectStrat selectStrat;
 
+
+    /**
+     * @param playerID The player number
+     * @param thinkingTime Time to make move
+     * @param playerProperty Contains the filter and selection strategies of
+     *                       the ai.
+     */
     public AI(int playerID, int thinkingTime, String playerProperty) {
         super(playerID);
 
