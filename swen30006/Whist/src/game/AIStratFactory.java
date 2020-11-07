@@ -1,12 +1,16 @@
 package game;
 
+/**
+ * The singleton factory that produced the strategies for the AI
+ */
 public class AIStratFactory {
         private static AIStratFactory instance;
 
-        private AIStratFactory() {
-            // TODO Auto-generated constructor stub
-        }
+        private AIStratFactory() {}
 
+    /**
+     * @return The factory
+     */
         public static AIStratFactory getInstance() {
             if (instance == null) {
                 instance = new AIStratFactory();
@@ -14,6 +18,10 @@ public class AIStratFactory {
             return instance;
         }
 
+    /**
+     * @param filterProperty The properties string related to filtering
+     * @return The coresponding filter strategy
+     */
         public IFilterStrat getFilterStrat(String filterProperty) {
             IFilterStrat product = null;
             if ("no".equals(filterProperty)) {
@@ -26,6 +34,10 @@ public class AIStratFactory {
             return product;
         }
 
+    /**
+     * @param selectProperty The properties string related to selection
+     * @return The selection strategy
+     */
         public ISelectStrat getSelectStrat(String selectProperty) {
             ISelectStrat product = null;
             if ("random".equals(selectProperty)) {

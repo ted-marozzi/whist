@@ -347,7 +347,7 @@ public class Whist extends CardGame {
     }
 
     public static void main(String[] args) {
-        setProperties("whist.properties");
+        setProperties("smart.properties");
         new Whist();
     }
 

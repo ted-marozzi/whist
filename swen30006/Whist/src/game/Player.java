@@ -1,12 +1,18 @@
 package game;
 import ch.aplu.jcardgame.*;
 
+/**
+ * The player class implemented by both the human and ai classes
+ */
 public abstract class Player {
     protected Hand hand;
     private int score;
 
     private final int playerID;
 
+    /**
+     * @param playerID The player number
+     */
     public Player(int playerID) {
         this.hand = null;
         this.playerID = playerID;
@@ -33,6 +39,11 @@ public abstract class Player {
         this.hand = hand;
     }
 
+    /**
+     * @param isLead is the player leading
+     * @param winningCard The current winning card
+     * @return The chosen card.
+     */
     public abstract Card chooseCard(boolean isLead, Card winningCard);
 
     public abstract String getStatusText(String leadOrFollow);
