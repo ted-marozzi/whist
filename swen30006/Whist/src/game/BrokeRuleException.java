@@ -1,5 +1,5 @@
 /**
- * Code by by Jake Hum, Edward Marozzi, Fei Yuan - Group 4
+ * Code by by Jake Hum, Edward Marozzi, Fei Yuan - Team 1
  */
 package game;
 /**
