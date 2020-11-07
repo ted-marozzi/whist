@@ -36,7 +36,7 @@ public class AIStratFactory {
 
     /**
      * @param selectProperty The properties string related to selection
-     * @return The selection strategy
+     * @return The coresponding selection strategy
      */
         public ISelectStrat getSelectStrat(String selectProperty) {
             ISelectStrat product = null;

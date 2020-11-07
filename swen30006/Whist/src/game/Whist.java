@@ -44,7 +44,6 @@ public class Whist extends CardGame {
     /**********************************************************************************************
      * Random
      */
-
     static Random random;
 
     // return random Enum value
@@ -306,6 +305,7 @@ public class Whist extends CardGame {
         selected.transfer(trick, true); // transfer to trick (includes graphic effect)
         System.out.println("Winning card: " + winningCard.toString());
         System.out.println("Player " + nextPlayer.getPlayerID() + " play: " + selected.toString() + " from [" + printHand(nextPlayer.getHand().getCardList()) + "]");
+
         // Determine the current winner
         if (currentWinner(winningCard, trumps) ) {
             winner = nextPlayer;
@@ -394,6 +394,7 @@ public class Whist extends CardGame {
         enforceRules = Boolean.parseBoolean(config.getProperty("enforceRules", "false"));
         thinkingTime = Integer.parseInt(config.getProperty("thinkingTime", "2000"));
         nbPlayers = Integer.parseInt(config.getProperty("nbPlayers", "4"));
+
         // set player properties
         for (int i = 0; i < nbPlayers; i++) {
             if (i == 0) { // player0 is human by default
